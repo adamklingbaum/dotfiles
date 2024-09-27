@@ -9,7 +9,11 @@ current_status() {
 link_file() {
   local src=$1 dst=$2
   mkdir -p "$(dirname "$dst")"
-  ln -sf "$src" "$dst"
+  if [ -d "$src" ]; then
+    ln -sfn "$src" "$dst"
+  else
+    ln -sf "$src" "$dst"
+  fi
 }
 
 if [ $SPIN ]; then
@@ -56,7 +60,23 @@ mkdir -p ~/.vim/tmp
 
 current_status "Setting up Neovim config"
 
-link_file ~/dotfiles/.config/nvim/init.lua ~/.config/nvim/init.lua
+link_nvim_config() {
+  local src_dir="$HOME/dotfiles/.config/nvim"
+  local dst_dir="$HOME/.config/nvim"
+
+  find "$src_dir" -type d | while read -r dir; do
+    local rel_path="${dir#$src_dir/}"
+    mkdir -p "$dst_dir/$rel_path"
+  done
+
+  find "$src_dir" -type f | while read -r file; do
+    local rel_path="${file#$src_dir/}"
+    link_file "$file" "$dst_dir/$rel_path"
+  done
+}
+
+current_status "Setting up Neovim config"
+link_nvim_config
 
 current_status "Installing lazy.nvim for neovim"
 
