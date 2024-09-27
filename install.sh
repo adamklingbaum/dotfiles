@@ -26,7 +26,7 @@ fi
 
 current_status "Installing dotfiles"
 
-dotfiles=(.ctags .gemrc .pryrc .railsrc .vimrc .zshrc)
+dotfiles=(.zshrc)
 
 for file in "${dotfiles[@]}"
 do
@@ -34,20 +34,6 @@ do
   rm -f ~/$file
   link_file ~/dotfiles/$file ~/$file
 done
-
-current_status "Linking .vim directory"
-
-mkdir -p ~/.vim
-mkdir -p ~/.vim/tmp
-
-current_status "Setting up Neovim config"
-
-link_file ~/dotfiles/.config/nvim/init.lua ~/.config/nvim/init.lua
-link_file ~/dotfiles/.config/nvim/coc-settings.json ~/.config/nvim/coc-settings.json
-
-current_status "Installing lazy.nvim for neovim"
-
-nvim --headless "+Lazy! sync" +qa
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if ! which brew > /dev/null; then
@@ -58,7 +44,22 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
 
   current_status "Installing via brew"
-  brew install -q neovim fzf ripgrep
+  brew install -q neovim
+
+  brew install --cask font-fira-code-nerd-font
 fi
+
+current_status "Linking .vim directory"
+
+mkdir -p ~/.vim
+mkdir -p ~/.vim/tmp
+
+current_status "Setting up Neovim config"
+
+link_file ~/dotfiles/.config/nvim/init.lua ~/.config/nvim/init.lua
+
+current_status "Installing lazy.nvim for neovim"
+
+nvim --headless "+Lazy! sync" +qa
 
 current_status "Installation successful 🚀"
