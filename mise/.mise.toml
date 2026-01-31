@@ -1,0 +1,19 @@
+# mise configuration - universal version manager
+# https://mise.jdx.dev/
+
+[settings]
+# Automatically install missing tools when entering a directory
+auto_install = true
+
+[tools]
+# Node.js - LTS version
+node = "lts"
+
+# Ruby - latest stable
+ruby = "latest"
+
+# Python - latest stable
+python = "latest"
+
+# pnpm - install via mise
+pnpm = "latest"
