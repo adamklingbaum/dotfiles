@@ -85,6 +85,7 @@ alias gco='git checkout'
 alias gcb='git checkout -b'
 alias gcm='git checkout $(git_main_branch)'
 alias gcd='git checkout develop'
+alias gsw='git switch'
 
 # Diff
 alias gd='git diff'
