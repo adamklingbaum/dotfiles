@@ -40,17 +40,131 @@ alias l='ls -CF'
 alias ..='cd ..'
 alias ...='cd ../..'
 
-# Git aliases
-alias gs='git status'
-alias gd='git diff'
+# Git aliases (oh-my-zsh style)
+# Status
+alias gst='git status'
+alias gss='git status -s'
+
+# Add
 alias ga='git add'
-alias gc='git commit'
+alias gaa='git add --all'
+alias gapa='git add --patch'
+
+# Commit
+alias gc='git commit -v'
+alias gc!='git commit -v --amend'
+alias gcn!='git commit -v --no-edit --amend'
+alias gca='git commit -v -a'
+alias gca!='git commit -v -a --amend'
+alias gcan!='git commit -v -a --no-edit --amend'
+alias gcam='git commit -a -m'
+alias gcmsg='git commit -m'
+
+# Push/Pull
 alias gp='git push'
-alias gl='git log --oneline -20'
+alias gpf='git push --force-with-lease'
+alias gpf!='git push --force'
+alias gpsup='git push --set-upstream origin $(git branch --show-current)'
+alias gl='git pull'
+alias gpr='git pull --rebase'
+
+# Fetch
+alias gf='git fetch'
+alias gfa='git fetch --all --prune'
+
+# Branch
+alias gb='git branch'
+alias gba='git branch -a'
+alias gbd='git branch -d'
+alias gbD='git branch -D'
+alias gbnm='git branch --no-merged'
+alias gbr='git branch --remote'
+
+# Checkout
+alias gco='git checkout'
+alias gcb='git checkout -b'
+alias gcm='git checkout $(git_main_branch)'
+alias gcd='git checkout develop'
+
+# Diff
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gdca='git diff --cached'
+alias gdt='git diff-tree --no-commit-id --name-only -r'
+
+# Log
+alias glog='git log --oneline --decorate --graph'
+alias gloga='git log --oneline --decorate --graph --all'
+alias glo='git log --oneline --decorate -20'
+alias glol='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset"'
+alias glols='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%ar) %C(bold blue)<%an>%Creset" --stat'
+
+# Merge
+alias gm='git merge'
+alias gma='git merge --abort'
+alias gms='git merge --squash'
+
+# Rebase
+alias grb='git rebase'
+alias grbi='git rebase -i'
+alias grbc='git rebase --continue'
+alias grba='git rebase --abort'
+alias grbs='git rebase --skip'
+alias grbm='git rebase $(git_main_branch)'
+
+# Reset
+alias grh='git reset'
+alias grhh='git reset --hard'
+alias grhs='git reset --soft'
+alias gru='git reset --'
+alias gpristine='git reset --hard && git clean -dffx'
+
+# Stash
+alias gsta='git stash push'
+alias gstaa='git stash apply'
+alias gstd='git stash drop'
+alias gstl='git stash list'
+alias gstp='git stash pop'
+alias gsts='git stash show --text'
+alias gstc='git stash clear'
+
+# Remote
+alias gr='git remote'
+alias grv='git remote -v'
+alias gra='git remote add'
+alias grrm='git remote remove'
+alias grset='git remote set-url'
+
+# Cherry-pick
+alias gcp='git cherry-pick'
+alias gcpa='git cherry-pick --abort'
+alias gcpc='git cherry-pick --continue'
+
+# Misc
+alias gcl='git clone --recurse-submodules'
+alias gbl='git blame -b -w'
+alias gcf='git config --list'
+alias gcount='git shortlog -sn'
+alias gclean='git clean -fd'
+alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
+
+# Helper function for main branch detection
+git_main_branch() {
+  command git rev-parse --git-dir &>/dev/null || return
+  local ref
+  for ref in refs/heads/{main,master,trunk,mainline,default}; do
+    if command git show-ref -q --verify "$ref"; then
+      echo "${ref#refs/heads/}"
+      return
+    fi
+  done
+  echo "main"
+}
 
 # Neovim
 alias vim='nvim'
 alias vi='nvim'
+alias nv='nvim'
 
 # ----- Path -----
 # Homebrew
