@@ -16,9 +16,10 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
--- Configure lazy.nvim with empty plugin list
+-- Configure lazy.nvim with plugins
 require("lazy").setup({
-  -- Plugins will be added here in future phases
+  -- Fuzzy finder
+  { "ibhagwan/fzf-lua" },
 }, {
   -- lazy.nvim configuration options
   checker = {

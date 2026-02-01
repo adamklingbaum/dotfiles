@@ -98,6 +98,8 @@ install_packages() {
     zsh-autosuggestions
     zsh-syntax-highlighting
     mise
+    fzf
+    ripgrep
   )
 
   for pkg in "${packages[@]}"; do
