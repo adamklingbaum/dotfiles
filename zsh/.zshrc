@@ -141,6 +141,64 @@ alias gcp='git cherry-pick'
 alias gcpa='git cherry-pick --abort'
 alias gcpc='git cherry-pick --continue'
 
+# Worktree
+alias gwt='git worktree'
+alias gwtl='git worktree list'
+alias gwta='git worktree add'
+alias gwtrm='git worktree remove'
+alias gwtrmf='git worktree remove --force'
+alias gwtmv='git worktree move'
+alias gwtp='git worktree prune'
+alias gwtlk='git worktree lock'
+alias gwtulk='git worktree unlock'
+alias gwtrp='git worktree repair'
+
+# Worktree helper functions
+# Add worktree with new branch: gwtab ../feature-x feature-x
+gwtab() {
+  git worktree add -b "$2" "$1" "${3:-HEAD}"
+}
+
+# Add worktree tracking remote branch: gwtat ../bugfix origin/bugfix-123
+gwtat() {
+  git worktree add --track -b "${2##*/}" "$1" "$2"
+}
+
+# Quick worktree in sibling directory named after branch
+# Usage: gwtq feature-branch → creates ../repo-feature-branch
+gwtq() {
+  local branch="$1"
+  local repo_name=$(basename "$(git rev-parse --show-toplevel)")
+  local worktree_path="../${repo_name}-${branch}"
+  if git show-ref --verify --quiet "refs/heads/$branch" 2>/dev/null; then
+    git worktree add "$worktree_path" "$branch"
+  elif git show-ref --verify --quiet "refs/remotes/origin/$branch" 2>/dev/null; then
+    git worktree add --track -b "$branch" "$worktree_path" "origin/$branch"
+  else
+    git worktree add -b "$branch" "$worktree_path"
+  fi
+  echo "Created worktree at $worktree_path"
+}
+
+# List worktrees with condensed output
+gwtls() {
+  git worktree list --porcelain | awk '/^worktree/ {wt=$2} /^branch/ {gsub("refs/heads/","",$2); print $2 " → " wt}'
+}
+
+# Remove worktree by branch name (searches for matching worktree)
+gwtrb() {
+  local wt=$(git worktree list --porcelain | awk -v branch="$1" '
+    /^worktree/ {wt=$2}
+    /^branch/ && $2 ~ branch {print wt; exit}
+  ')
+  if [[ -n "$wt" ]]; then
+    git worktree remove "$wt" && echo "Removed worktree: $wt"
+  else
+    echo "No worktree found for branch: $1" >&2
+    return 1
+  fi
+}
+
 # Misc
 alias gcl='git clone --recurse-submodules'
 alias gbl='git blame -b -w'
