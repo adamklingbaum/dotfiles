@@ -15,8 +15,10 @@ map("n", "<C-j>", "<C-w>j", { desc = "Move to lower window" })
 map("n", "<C-k>", "<C-w>k", { desc = "Move to upper window" })
 map("n", "<C-l>", "<C-w>l", { desc = "Move to right window" })
 
--- Quick save
+-- Quick save/quit
 map("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
+map("n", "<leader>q", "<cmd>q<CR>", { desc = "Quit" })
+map("n", "<leader>x", "<cmd>x<CR>", { desc = "Save and quit" })
 
 -- Better indenting (stay in visual mode)
 map("v", "<", "<gv", { desc = "Indent left" })
