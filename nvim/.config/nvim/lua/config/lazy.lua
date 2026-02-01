@@ -20,6 +20,12 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   -- Fuzzy finder
   { "ibhagwan/fzf-lua" },
+
+  -- Git signs in gutter
+  {
+    "lewis6991/gitsigns.nvim",
+    opts = {},
+  },
 }, {
   -- lazy.nvim configuration options
   checker = {
