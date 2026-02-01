@@ -146,7 +146,9 @@ alias gbl='git blame -b -w'
 alias gcf='git config --list'
 alias gcount='git shortlog -sn'
 alias gclean='git clean -fd'
-alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
+alias gwch='git log -p --abbrev-commit --pretty=medium'
+
+alias cl="clear"
 
 # Helper function for main branch detection
 git_main_branch() {
