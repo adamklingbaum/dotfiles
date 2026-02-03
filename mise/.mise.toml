@@ -4,9 +4,11 @@
 [settings]
 # Automatically install missing tools when entering a directory
 auto_install = true
+# Read .nvmrc, .node-version, .python-version, etc.
+legacy_version_file = true
 
 [tools]
-# Node.js - LTS version
+# Node.js - LTS version (projects can override via .nvmrc)
 node = "lts"
 
 # Ruby - latest stable
