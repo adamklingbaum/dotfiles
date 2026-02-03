@@ -200,16 +200,25 @@ gwtrb() {
 }
 
 # Dependabot helpers
-# Usage: depbot 123 recreate | depbot 123 rebase
+# Usage: depbot 123 recreate | depbot --dry-run 123 rebase
 depbot() {
+  local dry_run=false
+  if [[ "$1" == "--dry-run" ]]; then
+    dry_run=true
+    shift
+  fi
   if [[ -z "$1" ]]; then
-    echo "Usage: depbot <pr-number> <command>" >&2
+    echo "Usage: depbot [--dry-run] <pr-number> <command>" >&2
     echo "Commands: recreate, rebase, merge, squash, cancel" >&2
     return 1
   fi
   local pr="$1"
   local cmd="${2:-recreate}"
-  gh pr comment "$pr" --body "@dependabot $cmd"
+  if $dry_run; then
+    echo "Would run: gh pr comment $pr --body \"@dependabot $cmd\""
+  else
+    gh pr comment "$pr" --body "@dependabot $cmd"
+  fi
 }
 
 # Shortcuts for common dependabot commands
