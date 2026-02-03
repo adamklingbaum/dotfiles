@@ -94,6 +94,7 @@ install_packages() {
     stow
     neovim
     git
+    gh
     starship
     zsh-autosuggestions
     zsh-syntax-highlighting
