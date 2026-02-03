@@ -199,6 +199,24 @@ gwtrb() {
   fi
 }
 
+# Dependabot helpers
+# Usage: depbot 123 recreate | depbot 123 rebase
+depbot() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: depbot <pr-number> <command>" >&2
+    echo "Commands: recreate, rebase, merge, squash, cancel" >&2
+    return 1
+  fi
+  local pr="$1"
+  local cmd="${2:-recreate}"
+  gh pr comment "$pr" --body "@dependabot $cmd"
+}
+
+# Shortcuts for common dependabot commands
+alias dpr='depbot'                    # depbot shorthand
+dprecreate() { depbot "$1" recreate; }
+dprebase() { depbot "$1" rebase; }
+
 # Misc
 alias gcl='git clone --recurse-submodules'
 alias gbl='git blame -b -w'
