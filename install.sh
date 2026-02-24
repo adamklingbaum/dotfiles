@@ -99,6 +99,7 @@ install_packages() {
     zsh-autosuggestions
     zsh-syntax-highlighting
     mise
+    jq
     fzf
     ripgrep
   )
@@ -189,6 +190,7 @@ get_stow_packages() {
     # Skip hidden dirs and common non-package dirs
     [[ "$name" == .* ]] && continue
     [[ "$name" == "scripts" ]] && continue
+    [[ "$name" == "vscode" ]] && continue
     packages+=("$name")
   done
   echo "${packages[@]}"
@@ -239,6 +241,60 @@ stow_package() {
   success "$pkg stowed"
 }
 
+# Setup VS Code settings and extensions
+setup_vscode() {
+  if ! command -v code &>/dev/null; then
+    warn "VS Code CLI (code) not found, skipping VS Code setup"
+    return
+  fi
+
+  info "Setting up VS Code..."
+
+  # Determine platform-specific settings directory
+  local vscode_settings_dir
+  if [[ "$OS" == "macos" ]]; then
+    vscode_settings_dir="$HOME/Library/Application Support/Code/User"
+  else
+    vscode_settings_dir="$HOME/.config/Code/User"
+  fi
+
+  mkdir -p "$vscode_settings_dir"
+
+  local target="$vscode_settings_dir/settings.json"
+  local preferred="$DOTFILES_DIR/vscode/settings.json"
+
+  # Merge existing settings with preferred (preferred keys win on conflict)
+  if [[ -e "$target" || -L "$target" ]]; then
+    # Read existing settings (resolve symlinks, default to empty object on error)
+    local existing
+    existing=$(jq '.' "$target" 2>/dev/null || echo '{}')
+
+    # Remove symlink/file before writing merged result
+    backup_if_exists "$target"
+
+    # Merge: existing as base, preferred overwrites conflicting keys
+    jq -s '.[0] * .[1]' <(echo "$existing") "$preferred" > "$target"
+    success "VS Code settings.json merged (preferred settings applied)"
+  else
+    cp "$preferred" "$target"
+    success "VS Code settings.json created from preferred settings"
+  fi
+
+  # Install extensions
+  if [[ -f "$DOTFILES_DIR/vscode/extensions.txt" ]]; then
+    while IFS= read -r ext || [[ -n "$ext" ]]; do
+      [[ -z "$ext" ]] && continue
+      if code --list-extensions 2>/dev/null | grep -qi "^${ext}$"; then
+        success "VS Code extension $ext already installed"
+      else
+        info "Installing VS Code extension $ext..."
+        code --install-extension "$ext"
+        success "VS Code extension $ext installed"
+      fi
+    done < "$DOTFILES_DIR/vscode/extensions.txt"
+  fi
+}
+
 # Main installation
 main() {
   echo ""
@@ -275,6 +331,9 @@ main() {
     done
   fi
 
+  # Setup VS Code (if installed)
+  setup_vscode
+
   # Install dev tools if requested
   install_dev_tools
 
@@ -294,8 +353,9 @@ main() {
   echo "  1. Open Ghostty (your new terminal)"
   echo "  2. Starship prompt should appear automatically"
   echo "  3. Run 'nvim' - lazy.nvim will auto-install on first launch"
+  echo "  4. VS Code will use Catppuccin Mocha theme (if installed)"
   if [[ "$INSTALL_DEV_TOOLS" == true ]]; then
-    echo "  4. Node, Ruby, Python are ready - run 'mise list' to see versions"
+    echo "  5. Node, Ruby, Python are ready - run 'mise list' to see versions"
   else
     echo ""
     echo "Optional: Run './install.sh --with-dev' to install Node, Ruby, Python"
