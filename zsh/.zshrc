@@ -81,3 +81,9 @@ fi
 # ----- Starship prompt -----
 # Must be at the end of .zshrc
 eval "$(starship init zsh)"
+
+. "$HOME/.local/bin/env"
+
+# Added by flyctl installer
+export FLYCTL_INSTALL="/Users/klingbaum/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
